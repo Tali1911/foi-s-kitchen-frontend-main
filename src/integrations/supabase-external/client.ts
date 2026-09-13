@@ -30,8 +30,8 @@ export function getSupabaseClient(): Promise<SupabaseClient | null> {
       url && anonKey
         ? Promise.resolve(createClient(url, anonKey, { auth: { ...authOptions } }))
         : getSupabasePublicConfig().then(({ url, anonKey, configured }) =>
-          configured ? createClient(url, anonKey, { auth: { ...authOptions } }) : null,
-        );
+            configured ? createClient(url, anonKey, { auth: { ...authOptions } }) : null,
+          );
   }
   return clientPromise;
 }
