@@ -16,6 +16,7 @@ import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as MenuRouteImport } from './routes/menu'
 import { Route as OrderRouteImport } from './routes/order'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as QuoteRouteImport } from './routes/quote'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ServicesRouteImport } from './routes/services'
@@ -24,8 +25,10 @@ import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as AccountIndexRouteImport } from './routes/account.index'
 import { Route as AccountOrdersRouteImport } from './routes/account.orders'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminCartsRouteImport } from './routes/admin.carts'
 import { Route as AdminContentRouteImport } from './routes/admin.content'
 import { Route as AdminGalleryRouteImport } from './routes/admin.gallery'
+import { Route as AdminMarketingRouteImport } from './routes/admin.marketing'
 import { Route as AdminMediaRouteImport } from './routes/admin.media'
 import { Route as AdminMenuRouteImport } from './routes/admin.menu'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
@@ -33,6 +36,10 @@ import { Route as AdminPlansRouteImport } from './routes/admin.plans'
 import { Route as AdminServicesRouteImport } from './routes/admin.services'
 import { Route as AdminTestimonialsRouteImport } from './routes/admin.testimonials'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
+import { Route as ServicesIndexRouteImport } from './routes/services.index'
+import { Route as ServicesCorporateRouteImport } from './routes/services.corporate'
+import { Route as ServicesMealPrepRouteImport } from './routes/services.meal-prep'
+import { Route as ServicesWeddingsRouteImport } from './routes/services.weddings'
 import { Route as ApiPublicSupabaseStatusRouteImport } from './routes/api/public/supabase-status'
 
 const IndexRoute = IndexRouteImport.update({
@@ -68,6 +75,11 @@ const MenuRoute = MenuRouteImport.update({
 const OrderRoute = OrderRouteImport.update({
   id: '/order',
   path: '/order',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const QuoteRoute = QuoteRouteImport.update({
@@ -110,6 +122,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminCartsRoute = AdminCartsRouteImport.update({
+  id: '/admin/carts',
+  path: '/admin/carts',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminContentRoute = AdminContentRouteImport.update({
   id: '/admin/content',
   path: '/admin/content',
@@ -118,6 +135,11 @@ const AdminContentRoute = AdminContentRouteImport.update({
 const AdminGalleryRoute = AdminGalleryRouteImport.update({
   id: '/admin/gallery',
   path: '/admin/gallery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminMarketingRoute = AdminMarketingRouteImport.update({
+  id: '/admin/marketing',
+  path: '/admin/marketing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminMediaRoute = AdminMediaRouteImport.update({
@@ -155,6 +177,26 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
   path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ServicesIndexRoute = ServicesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ServicesRoute,
+} as any)
+const ServicesCorporateRoute = ServicesCorporateRouteImport.update({
+  id: '/corporate',
+  path: '/corporate',
+  getParentRoute: () => ServicesRoute,
+} as any)
+const ServicesMealPrepRoute = ServicesMealPrepRouteImport.update({
+  id: '/meal-prep',
+  path: '/meal-prep',
+  getParentRoute: () => ServicesRoute,
+} as any)
+const ServicesWeddingsRoute = ServicesWeddingsRouteImport.update({
+  id: '/weddings',
+  path: '/weddings',
+  getParentRoute: () => ServicesRoute,
+} as any)
 const ApiPublicSupabaseStatusRoute = ApiPublicSupabaseStatusRouteImport.update({
   id: '/api/public/supabase-status',
   path: '/api/public/supabase-status',
@@ -169,14 +211,17 @@ export interface FileRoutesByFullPath {
   '/gallery': typeof GalleryRoute
   '/menu': typeof MenuRoute
   '/order': typeof OrderRoute
+  '/privacy': typeof PrivacyRoute
   '/quote': typeof QuoteRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/services': typeof ServicesRoute
+  '/services': typeof ServicesRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/account/orders': typeof AccountOrdersRoute
+  '/admin/carts': typeof AdminCartsRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/gallery': typeof AdminGalleryRoute
+  '/admin/marketing': typeof AdminMarketingRoute
   '/admin/media': typeof AdminMediaRoute
   '/admin/menu': typeof AdminMenuRoute
   '/admin/orders': typeof AdminOrdersRoute
@@ -184,8 +229,12 @@ export interface FileRoutesByFullPath {
   '/admin/services': typeof AdminServicesRoute
   '/admin/testimonials': typeof AdminTestimonialsRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/services/corporate': typeof ServicesCorporateRoute
+  '/services/meal-prep': typeof ServicesMealPrepRoute
+  '/services/weddings': typeof ServicesWeddingsRoute
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
+  '/services/': typeof ServicesIndexRoute
   '/api/public/supabase-status': typeof ApiPublicSupabaseStatusRoute
 }
 export interface FileRoutesByTo {
@@ -196,14 +245,16 @@ export interface FileRoutesByTo {
   '/gallery': typeof GalleryRoute
   '/menu': typeof MenuRoute
   '/order': typeof OrderRoute
+  '/privacy': typeof PrivacyRoute
   '/quote': typeof QuoteRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/services': typeof ServicesRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/account/orders': typeof AccountOrdersRoute
+  '/admin/carts': typeof AdminCartsRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/gallery': typeof AdminGalleryRoute
+  '/admin/marketing': typeof AdminMarketingRoute
   '/admin/media': typeof AdminMediaRoute
   '/admin/menu': typeof AdminMenuRoute
   '/admin/orders': typeof AdminOrdersRoute
@@ -211,8 +262,12 @@ export interface FileRoutesByTo {
   '/admin/services': typeof AdminServicesRoute
   '/admin/testimonials': typeof AdminTestimonialsRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/services/corporate': typeof ServicesCorporateRoute
+  '/services/meal-prep': typeof ServicesMealPrepRoute
+  '/services/weddings': typeof ServicesWeddingsRoute
   '/account': typeof AccountIndexRoute
   '/admin': typeof AdminIndexRoute
+  '/services': typeof ServicesIndexRoute
   '/api/public/supabase-status': typeof ApiPublicSupabaseStatusRoute
 }
 export interface FileRoutesById {
@@ -224,14 +279,17 @@ export interface FileRoutesById {
   '/gallery': typeof GalleryRoute
   '/menu': typeof MenuRoute
   '/order': typeof OrderRoute
+  '/privacy': typeof PrivacyRoute
   '/quote': typeof QuoteRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/services': typeof ServicesRoute
+  '/services': typeof ServicesRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/account/orders': typeof AccountOrdersRoute
+  '/admin/carts': typeof AdminCartsRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/gallery': typeof AdminGalleryRoute
+  '/admin/marketing': typeof AdminMarketingRoute
   '/admin/media': typeof AdminMediaRoute
   '/admin/menu': typeof AdminMenuRoute
   '/admin/orders': typeof AdminOrdersRoute
@@ -239,8 +297,12 @@ export interface FileRoutesById {
   '/admin/services': typeof AdminServicesRoute
   '/admin/testimonials': typeof AdminTestimonialsRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/services/corporate': typeof ServicesCorporateRoute
+  '/services/meal-prep': typeof ServicesMealPrepRoute
+  '/services/weddings': typeof ServicesWeddingsRoute
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
+  '/services/': typeof ServicesIndexRoute
   '/api/public/supabase-status': typeof ApiPublicSupabaseStatusRoute
 }
 export interface FileRouteTypes {
@@ -253,14 +315,17 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/menu'
     | '/order'
+    | '/privacy'
     | '/quote'
     | '/reset-password'
     | '/services'
     | '/sign-in'
     | '/sign-up'
     | '/account/orders'
+    | '/admin/carts'
     | '/admin/content'
     | '/admin/gallery'
+    | '/admin/marketing'
     | '/admin/media'
     | '/admin/menu'
     | '/admin/orders'
@@ -268,8 +333,12 @@ export interface FileRouteTypes {
     | '/admin/services'
     | '/admin/testimonials'
     | '/auth/callback'
+    | '/services/corporate'
+    | '/services/meal-prep'
+    | '/services/weddings'
     | '/account/'
     | '/admin/'
+    | '/services/'
     | '/api/public/supabase-status'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -280,14 +349,16 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/menu'
     | '/order'
+    | '/privacy'
     | '/quote'
     | '/reset-password'
-    | '/services'
     | '/sign-in'
     | '/sign-up'
     | '/account/orders'
+    | '/admin/carts'
     | '/admin/content'
     | '/admin/gallery'
+    | '/admin/marketing'
     | '/admin/media'
     | '/admin/menu'
     | '/admin/orders'
@@ -295,8 +366,12 @@ export interface FileRouteTypes {
     | '/admin/services'
     | '/admin/testimonials'
     | '/auth/callback'
+    | '/services/corporate'
+    | '/services/meal-prep'
+    | '/services/weddings'
     | '/account'
     | '/admin'
+    | '/services'
     | '/api/public/supabase-status'
   id:
     | '__root__'
@@ -307,14 +382,17 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/menu'
     | '/order'
+    | '/privacy'
     | '/quote'
     | '/reset-password'
     | '/services'
     | '/sign-in'
     | '/sign-up'
     | '/account/orders'
+    | '/admin/carts'
     | '/admin/content'
     | '/admin/gallery'
+    | '/admin/marketing'
     | '/admin/media'
     | '/admin/menu'
     | '/admin/orders'
@@ -322,8 +400,12 @@ export interface FileRouteTypes {
     | '/admin/services'
     | '/admin/testimonials'
     | '/auth/callback'
+    | '/services/corporate'
+    | '/services/meal-prep'
+    | '/services/weddings'
     | '/account/'
     | '/admin/'
+    | '/services/'
     | '/api/public/supabase-status'
   fileRoutesById: FileRoutesById
 }
@@ -335,14 +417,17 @@ export interface RootRouteChildren {
   GalleryRoute: typeof GalleryRoute
   MenuRoute: typeof MenuRoute
   OrderRoute: typeof OrderRoute
+  PrivacyRoute: typeof PrivacyRoute
   QuoteRoute: typeof QuoteRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
-  ServicesRoute: typeof ServicesRoute
+  ServicesRoute: typeof ServicesRouteWithChildren
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
   AccountOrdersRoute: typeof AccountOrdersRoute
+  AdminCartsRoute: typeof AdminCartsRoute
   AdminContentRoute: typeof AdminContentRoute
   AdminGalleryRoute: typeof AdminGalleryRoute
+  AdminMarketingRoute: typeof AdminMarketingRoute
   AdminMediaRoute: typeof AdminMediaRoute
   AdminMenuRoute: typeof AdminMenuRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
@@ -406,6 +491,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrderRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/quote': {
       id: '/quote'
       path: '/quote'
@@ -462,6 +554,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/carts': {
+      id: '/admin/carts'
+      path: '/admin/carts'
+      fullPath: '/admin/carts'
+      preLoaderRoute: typeof AdminCartsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/content': {
       id: '/admin/content'
       path: '/admin/content'
@@ -474,6 +573,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/gallery'
       fullPath: '/admin/gallery'
       preLoaderRoute: typeof AdminGalleryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/marketing': {
+      id: '/admin/marketing'
+      path: '/admin/marketing'
+      fullPath: '/admin/marketing'
+      preLoaderRoute: typeof AdminMarketingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/media': {
@@ -525,6 +631,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/services/': {
+      id: '/services/'
+      path: '/'
+      fullPath: '/services/'
+      preLoaderRoute: typeof ServicesIndexRouteImport
+      parentRoute: typeof ServicesRoute
+    }
+    '/services/corporate': {
+      id: '/services/corporate'
+      path: '/corporate'
+      fullPath: '/services/corporate'
+      preLoaderRoute: typeof ServicesCorporateRouteImport
+      parentRoute: typeof ServicesRoute
+    }
+    '/services/meal-prep': {
+      id: '/services/meal-prep'
+      path: '/meal-prep'
+      fullPath: '/services/meal-prep'
+      preLoaderRoute: typeof ServicesMealPrepRouteImport
+      parentRoute: typeof ServicesRoute
+    }
+    '/services/weddings': {
+      id: '/services/weddings'
+      path: '/weddings'
+      fullPath: '/services/weddings'
+      preLoaderRoute: typeof ServicesWeddingsRouteImport
+      parentRoute: typeof ServicesRoute
+    }
     '/api/public/supabase-status': {
       id: '/api/public/supabase-status'
       path: '/api/public/supabase-status'
@@ -535,6 +669,24 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ServicesRouteChildren {
+  ServicesCorporateRoute: typeof ServicesCorporateRoute
+  ServicesMealPrepRoute: typeof ServicesMealPrepRoute
+  ServicesWeddingsRoute: typeof ServicesWeddingsRoute
+  ServicesIndexRoute: typeof ServicesIndexRoute
+}
+
+const ServicesRouteChildren: ServicesRouteChildren = {
+  ServicesCorporateRoute: ServicesCorporateRoute,
+  ServicesMealPrepRoute: ServicesMealPrepRoute,
+  ServicesWeddingsRoute: ServicesWeddingsRoute,
+  ServicesIndexRoute: ServicesIndexRoute,
+}
+
+const ServicesRouteWithChildren = ServicesRoute._addFileChildren(
+  ServicesRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
@@ -543,14 +695,17 @@ const rootRouteChildren: RootRouteChildren = {
   GalleryRoute: GalleryRoute,
   MenuRoute: MenuRoute,
   OrderRoute: OrderRoute,
+  PrivacyRoute: PrivacyRoute,
   QuoteRoute: QuoteRoute,
   ResetPasswordRoute: ResetPasswordRoute,
-  ServicesRoute: ServicesRoute,
+  ServicesRoute: ServicesRouteWithChildren,
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
   AccountOrdersRoute: AccountOrdersRoute,
+  AdminCartsRoute: AdminCartsRoute,
   AdminContentRoute: AdminContentRoute,
   AdminGalleryRoute: AdminGalleryRoute,
+  AdminMarketingRoute: AdminMarketingRoute,
   AdminMediaRoute: AdminMediaRoute,
   AdminMenuRoute: AdminMenuRoute,
   AdminOrdersRoute: AdminOrdersRoute,
