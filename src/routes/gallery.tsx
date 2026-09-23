@@ -8,24 +8,42 @@ import { GalleryGrid } from "@/components/GalleryGrid";
 import { TestimonialCard } from "@/components/TestimonialCard";
 import { PrimaryLink } from "@/components/CtaButtons";
 import { SkeletonGrid } from "@/components/CmsState";
+import { ReviewSubmitForm } from "@/components/ReviewSubmitForm";
 import { galleryFilters, galleryItemsQuery, testimonialsQuery, type GalleryFilter } from "@/lib/cms";
+import { breadcrumbSchema, jsonLd, pageSeo, reviewSchema } from "@/lib/seo";
+
 
 export const Route = createFileRoute("/gallery")({
-  head: () => ({
-    meta: [
-      { title: "Gallery & Reviews — Foi's Kitchen Nairobi" },
-      {
-        name: "description",
-        content:
-          "Photos from weddings, corporate lunches and our kitchen, plus reviews from Nairobi clients of Foi's Kitchen.",
-      },
-      { property: "og:title", content: "Gallery & Reviews — Foi's Kitchen" },
-      {
-        property: "og:description",
-        content: "See the food and events, and read what clients say.",
-      },
-    ],
-  }),
+  loader: async ({ context }) => {
+    try {
+      const reviews = await context.queryClient.ensureQueryData(testimonialsQuery);
+      return { reviews: reviews.map((r) => ({ name: r.name, quote: r.quote, rating: r.rating, role: r.role })) };
+    } catch {
+      return { reviews: [] };
+    }
+  },
+  head: ({ loaderData }) => {
+    const seo = pageSeo({
+      title: "Gallery & Reviews | Foi's Kitchen Nairobi",
+      description:
+        "Photos from Nairobi weddings, corporate lunches and our kitchen, plus reviews from clients of Foi's Kitchen.",
+      path: "/gallery",
+      image: "gallery",
+    });
+    const reviews = reviewSchema(loaderData?.reviews ?? []);
+    return {
+      ...seo,
+      scripts: [
+        ...(reviews ? [jsonLd(reviews)] : []),
+        jsonLd(
+          breadcrumbSchema([
+            { name: "Home", path: "/" },
+            { name: "Gallery & Reviews", path: "/gallery" },
+          ]),
+        ),
+      ],
+    };
+  },
   component: GalleryPage,
 });
 
@@ -67,6 +85,11 @@ function GalleryPage() {
             <p className="label-caps text-primary">Reviews</p>
             <h2 className="mt-2 font-display text-[1.75rem] font-semibold md:text-[2rem]">What clients say</h2>
           </SectionReveal>
+
+          <div className="mt-6">
+            <ReviewSubmitForm />
+          </div>
+
 
           <div className="mt-8">
             {reviews.isLoading ? (
