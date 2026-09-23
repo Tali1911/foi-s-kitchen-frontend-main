@@ -6,7 +6,6 @@ export const Route = createFileRoute("/admin/")({
   ssr: false,
   head: () => ({
     meta: [
-      { name: "robots", content: "noindex, nofollow" },
       { title: "Admin — Foi's Kitchen" },
       { name: "description", content: "Manage orders, menu, photos and page text for Foi's Kitchen." },
       { property: "og:title", content: "Admin — Foi's Kitchen" },
@@ -18,8 +17,6 @@ export const Route = createFileRoute("/admin/")({
 
 const cards = [
   { to: "/admin/orders", title: "Orders", body: "See new orders and update their status." },
-  { to: "/admin/carts", title: "Abandoned carts", body: "See who left food in their cart and nudge them." },
-  { to: "/admin/marketing", title: "Contacts", body: "Customer emails, newsletter sign-ups and CSV export." },
   { to: "/admin/menu", title: "Menu", body: "Add dishes, change prices, photos and dietary tags." },
   { to: "/admin/services", title: "Services & tiers", body: "Edit the three service tabs and their pricing cards." },
   { to: "/admin/plans", title: "Meal plans", body: "Edit the weekly meal prep plans." },

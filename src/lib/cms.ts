@@ -2,8 +2,6 @@ import { queryOptions } from "@tanstack/react-query";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { getSupabaseClient } from "@/integrations/supabase-external/client";
-import type { MediaType } from "@/lib/media";
-
 
 /* --------------------------------------------------------------- constants */
 
@@ -30,18 +28,10 @@ export type MediaAsset = {
   url: string;
   alt_text: string | null;
   label: string | null;
-  media_type?: MediaType | null;
-  poster_url?: string | null;
   uploaded_at?: string;
 };
 
-type ImageJoin = {
-  url: string;
-  alt_text: string | null;
-  media_type?: MediaType | null;
-  poster_url?: string | null;
-} | null;
-
+type ImageJoin = { url: string; alt_text: string | null } | null;
 
 export type MenuItemRow = {
   id: string;
@@ -92,8 +82,6 @@ export type MealPlanRow = {
   image?: ImageJoin;
 };
 
-export type TestimonialStatus = "pending" | "approved" | "hidden";
-
 export type TestimonialRow = {
   id: string;
   name: string;
@@ -102,12 +90,8 @@ export type TestimonialRow = {
   rating: number;
   photo_id: string | null;
   sort_order: number;
-  status?: TestimonialStatus;
-  submitted_by?: string | null;
-  created_at?: string;
   photo?: ImageJoin;
 };
-
 
 export type GalleryItemRow = {
   id: string;
@@ -126,14 +110,6 @@ export type PageSectionRow = {
   sort_order: number;
 };
 
-export type SocialLinksInfo = {
-  instagram?: string;
-  tiktok?: string;
-  facebook?: string;
-  x?: string;
-  youtube?: string;
-};
-
 export type BusinessInfo = {
   phoneDisplay: string;
   phoneTel: string;
@@ -142,7 +118,6 @@ export type BusinessInfo = {
   address: string;
   hours: { day: string; time: string }[];
   mapEmbed: string;
-  socials?: SocialLinksInfo;
 };
 
 /* --------------------------------------------------------------- utilities */
@@ -171,9 +146,7 @@ const SERVICE_COLUMNS = "*, image:media_assets!services_image_id_fkey(url, alt_t
 const TIER_COLUMNS = "*, image:media_assets!service_tiers_image_id_fkey(url, alt_text)";
 const PLAN_COLUMNS = "*, image:media_assets!meal_plans_image_id_fkey(url, alt_text)";
 const TESTIMONIAL_COLUMNS = "*, photo:media_assets!testimonials_photo_id_fkey(url, alt_text)";
-const GALLERY_COLUMNS =
-  "*, image:media_assets!gallery_items_image_id_fkey(url, alt_text, media_type, poster_url)";
-
+const GALLERY_COLUMNS = "*, image:media_assets!gallery_items_image_id_fkey(url, alt_text)";
 
 export const menuItemsQuery = queryOptions({
   queryKey: ["cms", "menu_items"],
@@ -195,21 +168,10 @@ export const mealPlansQuery = queryOptions({
   queryFn: () => select<MealPlanRow>("meal_plans", PLAN_COLUMNS),
 });
 
-/** Every review, including ones waiting for approval (admin only by RLS). */
-export const allTestimonialsQuery = queryOptions({
-  queryKey: ["cms", "testimonials", "all"],
-  queryFn: () => select<TestimonialRow>("testimonials", TESTIMONIAL_COLUMNS),
-});
-
-/** Reviews shown on the public site — approved only. */
 export const testimonialsQuery = queryOptions({
   queryKey: ["cms", "testimonials"],
-  queryFn: async () => {
-    const rows = await select<TestimonialRow>("testimonials", TESTIMONIAL_COLUMNS);
-    return rows.filter((r) => (r.status ?? "approved") === "approved");
-  },
+  queryFn: () => select<TestimonialRow>("testimonials", TESTIMONIAL_COLUMNS),
 });
-
 
 export const galleryItemsQuery = queryOptions({
   queryKey: ["cms", "gallery_items"],

@@ -4,20 +4,23 @@ import { PageHero } from "@/components/PageHero";
 import { SectionReveal } from "@/components/SectionReveal";
 import { ContactForm } from "@/components/ContactForm";
 import { WhatsAppLink } from "@/components/CtaButtons";
-import { SocialLinks } from "@/components/SocialLinks";
-import { ServiceArea } from "@/components/ServiceArea";
 import { site } from "@/lib/site";
-import { jsonLd, localBusinessSchema, pageSeo } from "@/lib/seo";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
-    ...pageSeo({
-      title: "Contact Foi's Kitchen | Catering in Nairobi",
-      description:
-        "Call, email or WhatsApp Foi's Kitchen in Nairobi. Opening hours, kitchen location, service area and a direct contact form.",
-      path: "/contact",
-    }),
-    scripts: [jsonLd(localBusinessSchema())],
+    meta: [
+      { title: "Contact Foi's Kitchen — Nairobi" },
+      {
+        name: "description",
+        content:
+          "Call, email or WhatsApp Foi's Kitchen in Nairobi. Business hours, location and a direct contact form.",
+      },
+      { property: "og:title", content: "Contact Foi's Kitchen — Nairobi" },
+      {
+        property: "og:description",
+        content: "Reach the kitchen directly — phone, email, WhatsApp or the contact form.",
+      },
+    ],
   }),
   component: ContactPage,
 });
@@ -70,13 +73,6 @@ function ContactPage() {
                 </span>
               </li>
             </ul>
-
-            <div>
-              <span className="label-caps block text-xs text-muted-foreground">Follow us</span>
-              <SocialLinks className="mt-2" itemClassName="border-border" />
-            </div>
-
-            <ServiceArea />
 
             <iframe
               title="Foi's Kitchen location"

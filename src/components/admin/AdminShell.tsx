@@ -7,8 +7,6 @@ import { cn } from "@/lib/utils";
 const links = [
   { to: "/admin", label: "Overview", exact: true },
   { to: "/admin/orders", label: "Orders" },
-  { to: "/admin/carts", label: "Abandoned carts" },
-  { to: "/admin/marketing", label: "Contacts" },
   { to: "/admin/menu", label: "Menu" },
   { to: "/admin/services", label: "Services & tiers" },
   { to: "/admin/plans", label: "Meal plans" },

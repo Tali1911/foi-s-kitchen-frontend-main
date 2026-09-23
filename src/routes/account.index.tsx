@@ -12,7 +12,6 @@ export const Route = createFileRoute("/account/")({
   ssr: false,
   head: () => ({
     meta: [
-      { name: "robots", content: "noindex, nofollow" },
       { title: "My Account — Foi's Kitchen Nairobi" },
       {
         name: "description",
@@ -38,7 +37,6 @@ function AccountPage() {
     default_method: "Delivery",
   });
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     if (!profile) return;
@@ -64,11 +62,8 @@ function AccountPage() {
       })
       .eq("id", user.id);
     setSaving(false);
-    if (error) {
-      setSaved(false);
-      toast.error(error.message);
-    } else {
-      setSaved(true);
+    if (error) toast.error(error.message);
+    else {
       toast.success("Details saved.");
       void refreshProfile();
     }
@@ -141,11 +136,6 @@ function AccountPage() {
           <button type="submit" disabled={saving} className={primaryButtonClass}>
             {saving ? "Saving…" : "Save details"}
           </button>
-          {saved && (
-            <Link to="/" className={primaryButtonClass}>
-              Go to home page
-            </Link>
-          )}
           <Link to="/account/orders" className={outlineButtonClass}>
             My orders
           </Link>

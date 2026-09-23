@@ -1,89 +1,24 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 
 import logo from "@/assets/logo.png";
 import { EmailField } from "@/components/EmailField";
 import { FormAlert } from "@/components/FormAlert";
 import { PasswordField } from "@/components/PasswordField";
-import { getGoogleOAuthClientId } from "@/integrations/supabase-external/config.functions";
 import { useAuth } from "@/lib/auth";
 import { mapAuthError, unavailableError, type AuthFieldErrors } from "@/lib/auth-errors";
 import { primaryButtonClass } from "@/lib/ui";
 
-type GoogleCredentialResponse = {
-  credential?: string;
-};
-
-type GoogleIdentity = {
-  accounts: {
-    id: {
-      initialize: (options: {
-        client_id: string;
-        callback: (response: GoogleCredentialResponse) => void;
-        cancel_on_tap_outside?: boolean;
-        use_fedcm_for_prompt?: boolean;
-        itp_support?: boolean;
-        auto_select?: boolean;
-      }) => void;
-      prompt: (listener?: (notification: unknown) => void) => void;
-      renderButton: (parent: HTMLElement, options: Record<string, unknown>) => void;
-      cancel: () => void;
-    };
-  };
-};
-
-declare global {
-  interface Window {
-    google?: GoogleIdentity;
-  }
-}
-
-let googleIdentityScriptPromise: Promise<void> | undefined;
-
-function loadGoogleIdentityScript() {
-  if (window.google?.accounts.id) return Promise.resolve();
-  if (googleIdentityScriptPromise) return googleIdentityScriptPromise;
-
-  googleIdentityScriptPromise = new Promise<void>((resolve, reject) => {
-    const existing = document.querySelector<HTMLScriptElement>(
-      'script[src="https://accounts.google.com/gsi/client"]',
-    );
-    if (existing) {
-      existing.addEventListener("load", () => resolve(), { once: true });
-      existing.addEventListener("error", () => reject(new Error("Google sign-in did not load.")), {
-        once: true,
-      });
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.src = "https://accounts.google.com/gsi/client";
-    script.async = true;
-    script.defer = true;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error("Google sign-in did not load."));
-    document.head.appendChild(script);
-  });
-
-  return googleIdentityScriptPromise;
-}
-
 export function AuthPanel({ mode }: { mode: "sign-in" | "sign-up" }) {
-  const { client, user } = useAuth();
+  const { client } = useAuth();
   const navigate = useNavigate();
-  const loadGoogleClientId = useServerFn(getGoogleOAuthClientId);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [sentConfirmation, setSentConfirmation] = useState(false);
-  const [marketingOptIn, setMarketingOptIn] = useState(false);
   const [errors, setErrors] = useState<AuthFieldErrors>({});
-  const oneTapStarted = useRef(false);
-  const googleButtonRef = useRef<HTMLDivElement | null>(null);
-  const [googleButtonReady, setGoogleButtonReady] = useState(false);
 
   const isSignUp = mode === "sign-up";
   const mismatch = isSignUp && confirmPassword.length > 0 && confirmPassword !== password;
@@ -98,79 +33,6 @@ export function AuthPanel({ mode }: { mode: "sign-in" | "sign-up" }) {
     if (data?.is_admin) return navigate({ to: "/admin/orders" });
     return navigate({ to: "/" });
   }
-
-  useEffect(() => {
-    if (!client || user || oneTapStarted.current) return;
-    oneTapStarted.current = true;
-    let cancelled = false;
-
-    async function showGoogleOneTap() {
-      if (!client) return;
-      const { clientId } = await loadGoogleClientId({
-        data: {
-          projectUrl: (import.meta.env["VITE_EXT_SUPABASE_URL"] as string | undefined) ?? "",
-        },
-      });
-      if (!clientId) return;
-
-      await loadGoogleIdentityScript();
-      if (cancelled || !window.google?.accounts.id) return;
-
-      window.google.accounts.id.initialize({
-        client_id: clientId,
-        cancel_on_tap_outside: true,
-        use_fedcm_for_prompt: true,
-        itp_support: true,
-        auto_select: false,
-        callback: (response) => {
-          if (!response.credential || cancelled) return;
-          setBusy(true);
-          setErrors({});
-          void client.auth
-            .signInWithIdToken({ provider: "google", token: response.credential })
-            .then(async ({ data: signInData, error: signInError }) => {
-              if (signInError) throw signInError;
-              toast.success(isSignUp ? "Account created." : "Signed in.");
-              await routeByRole(signInData.user.id);
-            })
-            .catch((signInError: unknown) => {
-              setErrors(mapAuthError(signInError, isSignUp ? "sign-up" : "sign-in"));
-            })
-            .finally(() => setBusy(false));
-        },
-      });
-      const buttonHost = googleButtonRef.current;
-      if (buttonHost) {
-        buttonHost.innerHTML = "";
-        try {
-          window.google.accounts.id.renderButton(buttonHost, {
-            type: "standard",
-            theme: "outline",
-            size: "large",
-            shape: "pill",
-            text: isSignUp ? "signup_with" : "signin_with",
-            logo_alignment: "left",
-            width: Math.min(Math.max(buttonHost.offsetWidth || 320, 200), 400),
-          });
-          if (buttonHost.childElementCount > 0) setGoogleButtonReady(true);
-        } catch {
-          setGoogleButtonReady(false);
-        }
-      }
-
-      window.google.accounts.id.prompt();
-    }
-
-    void showGoogleOneTap().catch(() => {
-      // Google may suppress One Tap because of browser or origin settings.
-      // The visible Google button below remains available in every case.
-    });
-
-    return () => {
-      cancelled = true;
-      window.google?.accounts.id.cancel();
-    };
-  }, [client, isSignUp, loadGoogleClientId, user]);
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -202,10 +64,7 @@ export function AuthPanel({ mode }: { mode: "sign-in" | "sign-up" }) {
         const { data, error } = await client.auth.signUp({
           email,
           password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`,
-            data: { marketing_opt_in: marketingOptIn },
-          },
+          options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
         });
         if (error) throw error;
         if (!data.session) {
@@ -235,10 +94,7 @@ export function AuthPanel({ mode }: { mode: "sign-in" | "sign-up" }) {
     }
     const { error } = await client.auth.signInWithOAuth({
       provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-        queryParams: { prompt: "select_account" },
-      },
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
     });
     if (error) setErrors(mapAuthError(error, isSignUp ? "sign-up" : "sign-in"));
   }
@@ -316,30 +172,6 @@ export function AuthPanel({ mode }: { mode: "sign-in" | "sign-up" }) {
             />
           ) : null}
 
-          {isSignUp ? (
-            <label className="flex cursor-pointer items-start gap-3 py-1 text-sm text-muted-foreground">
-              <input
-                type="checkbox"
-                checked={marketingOptIn}
-                onChange={(e) => setMarketingOptIn(e.target.checked)}
-                className="mt-0.5 h-4 w-4 shrink-0 accent-primary"
-              />
-              <span>
-                Email me Foi's Kitchen specials, new menu items and offers. Unsubscribe any time.
-                We'll always email you about your own orders.
-              </span>
-            </label>
-          ) : null}
-
-          {isSignUp ? (
-            <p className="text-xs text-muted-foreground">
-              By creating an account you agree to how we handle your details in our{" "}
-              <Link to="/privacy" className="font-semibold text-primary hover:underline">
-                Privacy Policy
-              </Link>
-              .
-            </p>
-          ) : null}
 
           {!isSignUp ? (
             <div className="-mt-1 text-right">
@@ -367,12 +199,10 @@ export function AuthPanel({ mode }: { mode: "sign-in" | "sign-up" }) {
           <span className="h-px flex-1 bg-gold/40" />
         </div>
 
-        <div ref={googleButtonRef} className="flex w-full justify-center empty:hidden" />
-
         <button
           type="button"
           onClick={onGoogle}
-          className={`${googleButtonReady ? "hidden" : "inline-flex"} label-caps min-h-[48px] w-full items-center justify-center gap-3 rounded-full border border-input bg-background px-6 text-foreground transition-colors duration-200 ease-out hover:border-primary hover:text-primary`}
+          className="label-caps inline-flex min-h-[48px] w-full items-center justify-center gap-3 rounded-full border border-input bg-background px-6 text-foreground transition-colors duration-200 ease-out hover:border-primary hover:text-primary"
         >
           <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
             <path

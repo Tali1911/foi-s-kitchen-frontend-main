@@ -13,7 +13,6 @@ export const Route = createFileRoute("/admin/gallery")({
   ssr: false,
   head: () => ({
     meta: [
-      { name: "robots", content: "noindex, nofollow" },
       { title: "Gallery Editor — Foi's Kitchen Admin" },
       { name: "description", content: "Manage the photo gallery and its categories." },
       { property: "og:title", content: "Gallery Editor — Foi's Kitchen Admin" },
@@ -116,9 +115,8 @@ function GalleryForm({
       }}
     >
       <MediaPicker
-        label="Photo or video"
+        label="Photo"
         defaultLabel="gallery"
-
         value={{ id: value.image_id, ...(value.imageUrl ? { url: value.imageUrl } : {}) }}
         onSelect={(asset) => setValue((p) => ({ ...p, image_id: asset.id, imageUrl: asset.url }))}
         onClear={() => setValue((p) => ({ ...p, image_id: null, imageUrl: "" }))}

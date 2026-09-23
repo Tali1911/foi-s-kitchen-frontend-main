@@ -18,8 +18,6 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { WhatsAppFloatButton } from "@/components/WhatsAppFloatButton";
 import { StickyOrderBar } from "@/components/StickyOrderBar";
-import { CartSync } from "@/components/CartSync";
-import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -146,8 +144,6 @@ function RootComponent() {
             </div>
             <WhatsAppFloatButton />
             <StickyOrderBar />
-            <CartSync />
-            <CookieConsentBanner />
             <Toaster position="top-center" />
           </CartProvider>
         </AuthProvider>

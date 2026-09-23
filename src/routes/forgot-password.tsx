@@ -12,7 +12,6 @@ export const Route = createFileRoute("/forgot-password")({
   ssr: false,
   head: () => ({
     meta: [
-      { name: "robots", content: "noindex, nofollow" },
       { title: "Reset Your Password — Foi's Kitchen Nairobi" },
       {
         name: "description",
