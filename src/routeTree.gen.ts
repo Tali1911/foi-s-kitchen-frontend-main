@@ -33,7 +33,9 @@ import { Route as AdminMediaRouteImport } from './routes/admin.media'
 import { Route as AdminMenuRouteImport } from './routes/admin.menu'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminPlansRouteImport } from './routes/admin.plans'
+import { Route as AdminRequestsRouteImport } from './routes/admin.requests'
 import { Route as AdminServicesRouteImport } from './routes/admin.services'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminTestimonialsRouteImport } from './routes/admin.testimonials'
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
@@ -162,9 +164,19 @@ const AdminPlansRoute = AdminPlansRouteImport.update({
   path: '/admin/plans',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRequestsRoute = AdminRequestsRouteImport.update({
+  id: '/admin/requests',
+  path: '/admin/requests',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminServicesRoute = AdminServicesRouteImport.update({
   id: '/admin/services',
   path: '/admin/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/admin/settings',
+  path: '/admin/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminTestimonialsRoute = AdminTestimonialsRouteImport.update({
@@ -226,7 +238,9 @@ export interface FileRoutesByFullPath {
   '/admin/menu': typeof AdminMenuRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/plans': typeof AdminPlansRoute
+  '/admin/requests': typeof AdminRequestsRoute
   '/admin/services': typeof AdminServicesRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/testimonials': typeof AdminTestimonialsRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/services/corporate': typeof ServicesCorporateRoute
@@ -259,7 +273,9 @@ export interface FileRoutesByTo {
   '/admin/menu': typeof AdminMenuRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/plans': typeof AdminPlansRoute
+  '/admin/requests': typeof AdminRequestsRoute
   '/admin/services': typeof AdminServicesRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/testimonials': typeof AdminTestimonialsRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/services/corporate': typeof ServicesCorporateRoute
@@ -294,7 +310,9 @@ export interface FileRoutesById {
   '/admin/menu': typeof AdminMenuRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/plans': typeof AdminPlansRoute
+  '/admin/requests': typeof AdminRequestsRoute
   '/admin/services': typeof AdminServicesRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/testimonials': typeof AdminTestimonialsRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/services/corporate': typeof ServicesCorporateRoute
@@ -330,7 +348,9 @@ export interface FileRouteTypes {
     | '/admin/menu'
     | '/admin/orders'
     | '/admin/plans'
+    | '/admin/requests'
     | '/admin/services'
+    | '/admin/settings'
     | '/admin/testimonials'
     | '/auth/callback'
     | '/services/corporate'
@@ -363,7 +383,9 @@ export interface FileRouteTypes {
     | '/admin/menu'
     | '/admin/orders'
     | '/admin/plans'
+    | '/admin/requests'
     | '/admin/services'
+    | '/admin/settings'
     | '/admin/testimonials'
     | '/auth/callback'
     | '/services/corporate'
@@ -397,7 +419,9 @@ export interface FileRouteTypes {
     | '/admin/menu'
     | '/admin/orders'
     | '/admin/plans'
+    | '/admin/requests'
     | '/admin/services'
+    | '/admin/settings'
     | '/admin/testimonials'
     | '/auth/callback'
     | '/services/corporate'
@@ -432,7 +456,9 @@ export interface RootRouteChildren {
   AdminMenuRoute: typeof AdminMenuRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
   AdminPlansRoute: typeof AdminPlansRoute
+  AdminRequestsRoute: typeof AdminRequestsRoute
   AdminServicesRoute: typeof AdminServicesRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
   AdminTestimonialsRoute: typeof AdminTestimonialsRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   AccountIndexRoute: typeof AccountIndexRoute
@@ -610,11 +636,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPlansRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/requests': {
+      id: '/admin/requests'
+      path: '/admin/requests'
+      fullPath: '/admin/requests'
+      preLoaderRoute: typeof AdminRequestsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/services': {
       id: '/admin/services'
       path: '/admin/services'
       fullPath: '/admin/services'
       preLoaderRoute: typeof AdminServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/admin/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/testimonials': {
@@ -710,7 +750,9 @@ const rootRouteChildren: RootRouteChildren = {
   AdminMenuRoute: AdminMenuRoute,
   AdminOrdersRoute: AdminOrdersRoute,
   AdminPlansRoute: AdminPlansRoute,
+  AdminRequestsRoute: AdminRequestsRoute,
   AdminServicesRoute: AdminServicesRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
   AdminTestimonialsRoute: AdminTestimonialsRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   AccountIndexRoute: AccountIndexRoute,

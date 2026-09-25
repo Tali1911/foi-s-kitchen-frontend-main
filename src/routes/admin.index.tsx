@@ -20,6 +20,7 @@ const cards = [
   { to: "/admin/orders", title: "Orders", body: "See new orders and update their status." },
   { to: "/admin/carts", title: "Abandoned carts", body: "See who left food in their cart and nudge them." },
   { to: "/admin/marketing", title: "Contacts", body: "Customer emails, newsletter sign-ups and CSV export." },
+  { to: "/admin/requests", title: "Data requests", body: "Record, assign and close customer data requests." },
   { to: "/admin/menu", title: "Menu", body: "Add dishes, change prices, photos and dietary tags." },
   { to: "/admin/services", title: "Services & tiers", body: "Edit the three service tabs and their pricing cards." },
   { to: "/admin/plans", title: "Meal plans", body: "Edit the weekly meal prep plans." },
@@ -27,6 +28,7 @@ const cards = [
   { to: "/admin/gallery", title: "Gallery", body: "Manage the photo gallery and its categories." },
   { to: "/admin/content", title: "Page text", body: "Home and About copy, plus your contact details." },
   { to: "/admin/media", title: "Photo library", body: "Upload photos and manage labels and descriptions." },
+  { to: "/admin/settings", title: "Email settings", body: "Connect Resend and send a test email." },
 ] as const;
 
 function AdminHome() {
