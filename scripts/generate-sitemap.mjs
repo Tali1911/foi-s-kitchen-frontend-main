@@ -8,7 +8,7 @@
  */
 import { writeFileSync } from "node:fs";
 
-const SITE_URL = (process.env.VITE_SITE_URL ?? "https://foiskitchen.netlify.app").replace(/\/$/, "");
+const SITE_URL = (process.env.VITE_SITE_URL ?? "https://foiskitchen.com").replace(/\/$/, "");
 
 const routes = [
   { path: "/", changefreq: "weekly", priority: "1.0" },
@@ -29,15 +29,15 @@ const lastmod = new Date().toISOString().slice(0, 10);
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${routes
-  .map(
-    (route) => `  <url>
+    .map(
+      (route) => `  <url>
     <loc>${SITE_URL}${route.path === "/" ? "/" : route.path}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>${route.changefreq}</changefreq>
     <priority>${route.priority}</priority>
   </url>`,
-  )
-  .join("\n")}
+    )
+    .join("\n")}
 </urlset>
 `;
 

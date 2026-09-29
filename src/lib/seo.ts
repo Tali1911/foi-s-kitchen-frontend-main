@@ -6,7 +6,7 @@ import { site } from "@/lib/site";
  * business moves to a custom domain.
  */
 export const SITE_URL = (
-  ((import.meta.env["VITE_SITE_URL"] as string | undefined) ?? "https://foiskitchen.netlify.app")
+  ((import.meta.env["VITE_SITE_URL"] as string | undefined) ?? "https://foiskitchen.com")
 ).replace(/\/$/, "");
 
 /** Absolute URL for a site-relative path (crawlers need absolute og/canonical). */
