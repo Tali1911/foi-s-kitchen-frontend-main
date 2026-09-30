@@ -18,10 +18,12 @@ import { Route as MenuRouteImport } from './routes/menu'
 import { Route as OrderRouteImport } from './routes/order'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as QuoteRouteImport } from './routes/quote'
+import { Route as RefundPolicyRouteImport } from './routes/refund-policy'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as SignUpRouteImport } from './routes/sign-up'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AccountIndexRouteImport } from './routes/account.index'
 import { Route as AccountOrdersRouteImport } from './routes/account.orders'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
@@ -42,6 +44,7 @@ import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ServicesCorporateRouteImport } from './routes/services.corporate'
 import { Route as ServicesMealPrepRouteImport } from './routes/services.meal-prep'
 import { Route as ServicesWeddingsRouteImport } from './routes/services.weddings'
+import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api/public/paystack-webhook'
 import { Route as ApiPublicSupabaseStatusRouteImport } from './routes/api/public/supabase-status'
 
 const IndexRoute = IndexRouteImport.update({
@@ -89,6 +92,11 @@ const QuoteRoute = QuoteRouteImport.update({
   path: '/quote',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RefundPolicyRoute = RefundPolicyRouteImport.update({
+  id: '/refund-policy',
+  path: '/refund-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -107,6 +115,11 @@ const SignInRoute = SignInRouteImport.update({
 const SignUpRoute = SignUpRouteImport.update({
   id: '/sign-up',
   path: '/sign-up',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountIndexRoute = AccountIndexRouteImport.update({
@@ -209,6 +222,12 @@ const ServicesWeddingsRoute = ServicesWeddingsRouteImport.update({
   path: '/weddings',
   getParentRoute: () => ServicesRoute,
 } as any)
+const ApiPublicPaystackWebhookRoute =
+  ApiPublicPaystackWebhookRouteImport.update({
+    id: '/api/public/paystack-webhook',
+    path: '/api/public/paystack-webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicSupabaseStatusRoute = ApiPublicSupabaseStatusRouteImport.update({
   id: '/api/public/supabase-status',
   path: '/api/public/supabase-status',
@@ -225,10 +244,12 @@ export interface FileRoutesByFullPath {
   '/order': typeof OrderRoute
   '/privacy': typeof PrivacyRoute
   '/quote': typeof QuoteRoute
+  '/refund-policy': typeof RefundPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
+  '/terms': typeof TermsRoute
   '/account/orders': typeof AccountOrdersRoute
   '/admin/carts': typeof AdminCartsRoute
   '/admin/content': typeof AdminContentRoute
@@ -249,6 +270,7 @@ export interface FileRoutesByFullPath {
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/services/': typeof ServicesIndexRoute
+  '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
   '/api/public/supabase-status': typeof ApiPublicSupabaseStatusRoute
 }
 export interface FileRoutesByTo {
@@ -261,9 +283,11 @@ export interface FileRoutesByTo {
   '/order': typeof OrderRoute
   '/privacy': typeof PrivacyRoute
   '/quote': typeof QuoteRoute
+  '/refund-policy': typeof RefundPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
+  '/terms': typeof TermsRoute
   '/account/orders': typeof AccountOrdersRoute
   '/admin/carts': typeof AdminCartsRoute
   '/admin/content': typeof AdminContentRoute
@@ -284,6 +308,7 @@ export interface FileRoutesByTo {
   '/account': typeof AccountIndexRoute
   '/admin': typeof AdminIndexRoute
   '/services': typeof ServicesIndexRoute
+  '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
   '/api/public/supabase-status': typeof ApiPublicSupabaseStatusRoute
 }
 export interface FileRoutesById {
@@ -297,10 +322,12 @@ export interface FileRoutesById {
   '/order': typeof OrderRoute
   '/privacy': typeof PrivacyRoute
   '/quote': typeof QuoteRoute
+  '/refund-policy': typeof RefundPolicyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
+  '/terms': typeof TermsRoute
   '/account/orders': typeof AccountOrdersRoute
   '/admin/carts': typeof AdminCartsRoute
   '/admin/content': typeof AdminContentRoute
@@ -321,6 +348,7 @@ export interface FileRoutesById {
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/services/': typeof ServicesIndexRoute
+  '/api/public/paystack-webhook': typeof ApiPublicPaystackWebhookRoute
   '/api/public/supabase-status': typeof ApiPublicSupabaseStatusRoute
 }
 export interface FileRouteTypes {
@@ -335,10 +363,12 @@ export interface FileRouteTypes {
     | '/order'
     | '/privacy'
     | '/quote'
+    | '/refund-policy'
     | '/reset-password'
     | '/services'
     | '/sign-in'
     | '/sign-up'
+    | '/terms'
     | '/account/orders'
     | '/admin/carts'
     | '/admin/content'
@@ -359,6 +389,7 @@ export interface FileRouteTypes {
     | '/account/'
     | '/admin/'
     | '/services/'
+    | '/api/public/paystack-webhook'
     | '/api/public/supabase-status'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -371,9 +402,11 @@ export interface FileRouteTypes {
     | '/order'
     | '/privacy'
     | '/quote'
+    | '/refund-policy'
     | '/reset-password'
     | '/sign-in'
     | '/sign-up'
+    | '/terms'
     | '/account/orders'
     | '/admin/carts'
     | '/admin/content'
@@ -394,6 +427,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/admin'
     | '/services'
+    | '/api/public/paystack-webhook'
     | '/api/public/supabase-status'
   id:
     | '__root__'
@@ -406,10 +440,12 @@ export interface FileRouteTypes {
     | '/order'
     | '/privacy'
     | '/quote'
+    | '/refund-policy'
     | '/reset-password'
     | '/services'
     | '/sign-in'
     | '/sign-up'
+    | '/terms'
     | '/account/orders'
     | '/admin/carts'
     | '/admin/content'
@@ -430,6 +466,7 @@ export interface FileRouteTypes {
     | '/account/'
     | '/admin/'
     | '/services/'
+    | '/api/public/paystack-webhook'
     | '/api/public/supabase-status'
   fileRoutesById: FileRoutesById
 }
@@ -443,10 +480,12 @@ export interface RootRouteChildren {
   OrderRoute: typeof OrderRoute
   PrivacyRoute: typeof PrivacyRoute
   QuoteRoute: typeof QuoteRoute
+  RefundPolicyRoute: typeof RefundPolicyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ServicesRoute: typeof ServicesRouteWithChildren
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
+  TermsRoute: typeof TermsRoute
   AccountOrdersRoute: typeof AccountOrdersRoute
   AdminCartsRoute: typeof AdminCartsRoute
   AdminContentRoute: typeof AdminContentRoute
@@ -463,6 +502,7 @@ export interface RootRouteChildren {
   AuthCallbackRoute: typeof AuthCallbackRoute
   AccountIndexRoute: typeof AccountIndexRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
   ApiPublicSupabaseStatusRoute: typeof ApiPublicSupabaseStatusRoute
 }
 
@@ -531,6 +571,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof QuoteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/refund-policy': {
+      id: '/refund-policy'
+      path: '/refund-policy'
+      fullPath: '/refund-policy'
+      preLoaderRoute: typeof RefundPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -557,6 +604,13 @@ declare module '@tanstack/react-router' {
       path: '/sign-up'
       fullPath: '/sign-up'
       preLoaderRoute: typeof SignUpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/account/': {
@@ -699,6 +753,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesWeddingsRouteImport
       parentRoute: typeof ServicesRoute
     }
+    '/api/public/paystack-webhook': {
+      id: '/api/public/paystack-webhook'
+      path: '/api/public/paystack-webhook'
+      fullPath: '/api/public/paystack-webhook'
+      preLoaderRoute: typeof ApiPublicPaystackWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/supabase-status': {
       id: '/api/public/supabase-status'
       path: '/api/public/supabase-status'
@@ -737,10 +798,12 @@ const rootRouteChildren: RootRouteChildren = {
   OrderRoute: OrderRoute,
   PrivacyRoute: PrivacyRoute,
   QuoteRoute: QuoteRoute,
+  RefundPolicyRoute: RefundPolicyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ServicesRoute: ServicesRouteWithChildren,
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
+  TermsRoute: TermsRoute,
   AccountOrdersRoute: AccountOrdersRoute,
   AdminCartsRoute: AdminCartsRoute,
   AdminContentRoute: AdminContentRoute,
@@ -757,6 +820,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthCallbackRoute: AuthCallbackRoute,
   AccountIndexRoute: AccountIndexRoute,
   AdminIndexRoute: AdminIndexRoute,
+  ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
   ApiPublicSupabaseStatusRoute: ApiPublicSupabaseStatusRoute,
 }
 export const routeTree = rootRouteImport

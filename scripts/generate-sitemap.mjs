@@ -26,6 +26,8 @@ const routes = [
   { path: "/about", changefreq: "monthly", priority: "0.6" },
   { path: "/contact", changefreq: "monthly", priority: "0.6" },
   { path: "/privacy", changefreq: "yearly", priority: "0.3" },
+  { path: "/terms", changefreq: "yearly", priority: "0.3" },
+  { path: "/refund-policy", changefreq: "yearly", priority: "0.3" },
 ];
 
 const lastmod = new Date().toISOString().slice(0, 10);
@@ -33,15 +35,15 @@ const lastmod = new Date().toISOString().slice(0, 10);
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${routes
-    .map(
-      (route) => `  <url>
+  .map(
+    (route) => `  <url>
     <loc>${SITE_URL}${route.path === "/" ? "/" : route.path}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>${route.changefreq}</changefreq>
     <priority>${route.priority}</priority>
   </url>`,
-    )
-    .join("\n")}
+  )
+  .join("\n")}
 </urlset>
 `;
 

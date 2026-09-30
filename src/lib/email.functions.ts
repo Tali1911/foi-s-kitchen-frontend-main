@@ -1,8 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { site } from "@/lib/site";
 import { quoteBusinessEmail, quoteCustomerEmail } from "@/lib/email-templates/quote";
 import { orderBusinessEmail, orderCustomerEmail } from "@/lib/email-templates/order";
+import { cartReminderEmail } from "@/lib/email-templates/cart-reminder";
 
 type Result = { ok: true; reference: string } | { ok: false; error: string };
 
@@ -18,6 +18,7 @@ function makeReference(kind: "Q" | "O") {
 /** Sender mailboxes. Env vars override these defaults. */
 const ORDERS_FROM = () => process.env["RESEND_FROM_ORDERS"] || `Foi's Kitchen <orders@foiskitchen.com>`;
 const SUPPORT_FROM = () => process.env["RESEND_FROM_SUPPORT"] || `Foi's Kitchen <support@foiskitchen.com>`;
+const IVY_FROM = () => process.env["RESEND_FROM_IVY"] || `Ivy — Foi's Kitchen <ivy@foiskitchen.com>`;
 
 /**
  * Resend API key resolution order:
@@ -69,7 +70,8 @@ async function sendResend(payload: {
   }
 }
 
-const inbox = () => process.env["ORDERS_INBOX"] || site.email;
+const ORDERS_INBOX = () => process.env["ORDERS_INBOX"] || "orders@foiskitchen.com";
+const QUOTES_INBOX = () => process.env["QUOTES_INBOX"] || "quotations@foiskitchen.com";
 
 const quoteSchema = z.object({
   name: short(120).min(1),
@@ -90,7 +92,7 @@ export const sendQuoteEmail = createServerFn({ method: "POST" })
     const reference = makeReference("Q");
     try {
       await sendResend({
-        to: inbox(),
+        to: QUOTES_INBOX(),
         subject: `New quotation request — ${data.name} (${reference})`,
         html: quoteBusinessEmail(data, reference),
         from: SUPPORT_FROM(),
@@ -130,7 +132,7 @@ export const sendOrderEmail = createServerFn({ method: "POST" })
     const reference = makeReference("O");
     try {
       await sendResend({
-        to: inbox(),
+        to: ORDERS_INBOX(),
         subject: `New order — ${data.name} (${reference})`,
         html: orderBusinessEmail(data, reference),
         from: ORDERS_FROM(),
@@ -171,13 +173,48 @@ async function requireAdmin(accessToken: string) {
   return admin;
 }
 
+// ---------------------------------------------------------------------------
+// Admin: abandoned-cart reminder, sent from ivy@foiskitchen.com.
+// ---------------------------------------------------------------------------
+
+const cartReminderSchema = z.object({
+  accessToken: z.string().min(20),
+  to: z.string().trim().email().max(200),
+  name: short(120),
+  items: z
+    .array(z.object({ name: short(160).min(1), qty: z.number().int().min(1).max(500), price: z.number().min(0).max(1_000_000) }))
+    .min(1)
+    .max(60),
+  total: z.number().min(0).max(10_000_000),
+});
+
+export const sendCartReminderEmail = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => cartReminderSchema.parse(d))
+  .handler(async ({ data }): Promise<{ ok: boolean; error?: string }> => {
+    try {
+      await requireAdmin(data.accessToken);
+      const reference = makeReference("O");
+      await sendResend({
+        to: data.to,
+        subject: "You left something delicious in your cart",
+        html: cartReminderEmail({ name: data.name || null, items: data.items, total: data.total, reference }),
+        from: IVY_FROM(),
+      });
+      return { ok: true };
+    } catch (e) {
+      console.error(e);
+      return { ok: false, error: e instanceof Error ? e.message : "The reminder email failed." };
+    }
+  });
+
 export type EmailSettings = {
   connected: boolean;
   source: "environment" | "dashboard" | null;
   keyPreview: string | null;
   ordersFrom: string;
   supportFrom: string;
-  inbox: string;
+  ordersInbox: string;
+  quotesInbox: string;
 };
 
 export const getEmailSettings = createServerFn({ method: "POST" })
@@ -198,7 +235,8 @@ export const getEmailSettings = createServerFn({ method: "POST" })
       keyPreview: active ? `${active.slice(0, 7)}…${active.slice(-4)}` : null,
       ordersFrom: ORDERS_FROM(),
       supportFrom: SUPPORT_FROM(),
-      inbox: inbox(),
+      ordersInbox: ORDERS_INBOX(),
+      quotesInbox: QUOTES_INBOX(),
     };
   });
 
