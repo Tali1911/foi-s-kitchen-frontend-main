@@ -9,9 +9,7 @@
 import { writeFileSync } from "node:fs";
 
 let rawSiteUrl = (process.env.VITE_SITE_URL ?? "https://foiskitchen.com").trim();
-if (!/^https?:\/\//i.test(rawSiteUrl)) {
-  rawSiteUrl = `https://${rawSiteUrl}`;
-}
+if (!/^https?:\/\//i.test(rawSiteUrl)) rawSiteUrl = `https://${rawSiteUrl}`;
 const SITE_URL = rawSiteUrl.replace(/\/$/, "");
 
 const routes = [

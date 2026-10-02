@@ -5,11 +5,12 @@ import { site } from "@/lib/site";
  * VITE_SITE_URL (Netlify → Site settings → Environment variables) when the
  * business moves to a custom domain.
  */
-let rawSiteUrl = ((import.meta.env["VITE_SITE_URL"] as string | undefined) ?? "https://foiskitchen.com").trim();
-if (!/^https?:\/\//i.test(rawSiteUrl)) {
-  rawSiteUrl = `https://${rawSiteUrl}`;
-}
-export const SITE_URL = rawSiteUrl.replace(/\/$/, "");
+const rawSiteUrl = (
+  (import.meta.env["VITE_SITE_URL"] as string | undefined) ?? "https://foiskitchen.com"
+).trim();
+export const SITE_URL = (
+  /^https?:\/\//i.test(rawSiteUrl) ? rawSiteUrl : `https://${rawSiteUrl}`
+).replace(/\/$/, "");
 
 /** Absolute URL for a site-relative path (crawlers need absolute og/canonical). */
 export const absoluteUrl = (path: string) => `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
