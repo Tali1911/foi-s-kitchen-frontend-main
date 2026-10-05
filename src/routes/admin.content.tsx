@@ -7,10 +7,12 @@ import { Field, SelectInput, TextArea, TextInput } from "@/components/admin/Fiel
 import { MediaPicker } from "@/components/admin/MediaPicker";
 import { socialPlatforms } from "@/components/SocialLinks";
 import { defaultHeroSlides, type HeroSlide } from "@/components/HeroCarousel";
-import { pageSectionsQuery, sectionContent, type BusinessInfo } from "@/lib/cms";
+import { menuItemsQuery, pageSectionsQuery, sectionContent, type BusinessInfo } from "@/lib/cms";
 import { arrayToLines, linesToArray, usePageSection } from "@/lib/cms-admin";
+import type { MealOfDayConfig } from "@/components/MealOfTheDay";
 import { iconNames } from "@/lib/icons";
 import { site } from "@/lib/site";
+import { defaultSpread, type SpreadConfig, type SpreadGroup } from "@/lib/spread";
 import { primaryButtonClass, outlineButtonClass } from "@/lib/ui";
 import {
   aboutDefaults,
@@ -64,7 +66,11 @@ function AdminContentPage() {
   const home = useQuery(pageSectionsQuery("home"));
   const about = useQuery(pageSectionsQuery("about"));
   const global = useQuery(pageSectionsQuery("global"));
+  const corporate = useQuery(pageSectionsQuery("corporate"));
+  const spread = sectionContent<SpreadConfig>(corporate.data, "spread-builder", defaultSpread);
   const saveSection = usePageSection();
+  const menu = useQuery(menuItemsQuery);
+  const mealOfDay = sectionContent<MealOfDayConfig>(home.data, "meal-of-the-day", {});
 
   const slides = sectionContent<{ slides?: HeroSlide[] }>(home.data, "hero", {}).slides ?? defaultHeroSlides;
   const features = sectionContent<{ items?: IconItem[] }>(home.data, "feature-icons", {}).items ?? homeDefaults.features;
@@ -102,6 +108,15 @@ function AdminContentPage() {
           <IconItemsForm items={steps} onSave={(items) => saveSection("home", "how-it-works", { items })} />
         </Panel>
 
+        <Panel title="Home — meal of the day">
+          <MealOfDayForm
+            key={home.dataUpdatedAt}
+            config={mealOfDay}
+            dishes={(menu.data ?? []).map((m) => ({ id: m.id, name: m.name, price: Number(m.price), description: m.description ?? "" }))}
+            onSave={(next) => saveSection("home", "meal-of-the-day", next)}
+          />
+        </Panel>
+
         <Panel title="About — top of the page">
           <AboutHeroForm hero={aboutHero} onSave={(next) => saveSection("about", "hero", next)} />
         </Panel>
@@ -120,6 +135,14 @@ function AdminContentPage() {
 
         <Panel title="About — the numbers strip">
           <NumbersForm numbers={numbers} onSave={(next) => saveSection("about", "numbers", next)} />
+        </Panel>
+
+        <Panel title="Corporate — build your spread">
+          <SpreadForm
+            key={corporate.dataUpdatedAt}
+            groups={spread.groups ?? defaultSpread.groups}
+            onSave={(groups) => saveSection("corporate", "spread-builder", { groups })}
+          />
         </Panel>
 
         <Panel title="Contact details (used all over the site)">
@@ -519,6 +542,148 @@ function BusinessForm({
       ))}
       <div className="md:col-span-2">
         <SaveButton saving={saving} label="Save contact details" />
+      </div>
+    </form>
+  );
+}
+
+/* ------------------------------------------------------ corporate spread */
+
+function SpreadForm({
+  groups,
+  onSave,
+}: {
+  groups: SpreadGroup[];
+  onSave: (groups: SpreadGroup[]) => Promise<boolean | void>;
+}) {
+  const [value, setValue] = useState(() =>
+    groups.map((g) => ({ ...g, text: arrayToLines(g.options) })),
+  );
+  const [saving, setSaving] = useState(false);
+
+  const update = (i: number, patch: Partial<(typeof value)[number]>) =>
+    setValue((prev) => prev.map((g, idx) => (idx === i ? { ...g, ...patch } : g)));
+  const move = (i: number, dir: -1 | 1) =>
+    setValue((prev) => {
+      const j = i + dir;
+      if (j < 0 || j >= prev.length) return prev;
+      const next = [...prev];
+      next.splice(j, 0, ...next.splice(i, 1));
+      return next;
+    });
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    await onSave(
+      value
+        .filter((g) => g.title.trim())
+        .map(({ key, title, text }) => ({ key, title: title.trim(), options: linesToArray(text) })),
+    );
+    setSaving(false);
+  };
+
+  return (
+    <form className="flex flex-col gap-4" onSubmit={(e) => void submit(e)}>
+      <p className="text-sm text-muted-foreground">
+        Customers can always add their own "Other" items in every category.
+      </p>
+      {value.map((g, i) => (
+        <div key={g.key} className="grid gap-4 rounded-xl border border-border p-4">
+          <Field label="Category name">
+            <TextInput value={g.title} onChange={(e) => update(i, { title: e.target.value })} />
+          </Field>
+          <Field label="Choices (one per line)">
+            <TextArea rows={6} value={g.text} onChange={(e) => update(i, { text: e.target.value })} />
+          </Field>
+          <div className="flex flex-wrap gap-2">
+            <button type="button" className={outlineButtonClass} onClick={() => move(i, -1)} disabled={i === 0}>
+              Move up
+            </button>
+            <button
+              type="button"
+              className={outlineButtonClass}
+              onClick={() => move(i, 1)}
+              disabled={i === value.length - 1}
+            >
+              Move down
+            </button>
+            <button
+              type="button"
+              className={outlineButtonClass}
+              onClick={() => setValue((prev) => prev.filter((_, idx) => idx !== i))}
+            >
+              Remove category
+            </button>
+          </div>
+        </div>
+      ))}
+      <div className="flex flex-wrap gap-3">
+        <button
+          type="button"
+          className={outlineButtonClass}
+          onClick={() =>
+            setValue((prev) => [...prev, { key: `cat-${Date.now()}`, title: "", options: [], text: "" }])
+          }
+        >
+          Add category
+        </button>
+        <SaveButton saving={saving} label="Save spread builder" />
+      </div>
+    </form>
+  );
+}
+
+/* ----------------------------------------------------------- meal of the day */
+
+function MealOfDayForm({
+  config,
+  dishes,
+  onSave,
+}: {
+  config: MealOfDayConfig;
+  dishes: { id: string; name: string; price: number; description: string }[];
+  onSave: (value: MealOfDayConfig) => Promise<boolean | void>;
+}) {
+  const [value, setValue] = useState<MealOfDayConfig>(config);
+  const { saving, submit } = useSaver(onSave);
+  const dish = dishes.find((d) => d.id === value.itemId);
+
+  return (
+    <form className="flex flex-col gap-4" onSubmit={(e) => void submit(e, value)}>
+      <Field label="Today's dish">
+        <SelectInput value={value.itemId ?? ""} onChange={(e) => setValue({ ...value, itemId: e.target.value })}>
+          <option value="">Rotate automatically through the menu</option>
+          {dishes.map((d) => (
+            <option key={d.id} value={d.id}>
+              {d.name}
+            </option>
+          ))}
+        </SelectInput>
+      </Field>
+      {dish && (
+        <>
+          <Field label="Description (leave empty to use the menu text)">
+            <TextArea
+              placeholder={dish.description}
+              value={value.description ?? ""}
+              onChange={(e) => setValue({ ...value, description: e.target.value })}
+            />
+          </Field>
+          <Field label="Special price in KSh (leave empty to use the menu price)">
+            <TextInput
+              type="number"
+              min={0}
+              placeholder={String(dish.price)}
+              value={value.price ?? ""}
+              onChange={(e) => setValue({ ...value, price: e.target.value })}
+            />
+          </Field>
+          <p className="text-sm text-muted-foreground">The photo comes from this dish on the Menu page.</p>
+        </>
+      )}
+      <div>
+        <SaveButton saving={saving} label="Save meal of the day" />
       </div>
     </form>
   );
